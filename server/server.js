@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import adminRoutes from "./routes/adminRoutes.js"
 import authRoutes from "./routes/authRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
+import organizerRequestRoutes from './routes/organizerRequestRoute.js'
 dotenv.config();
 
 const app = express();
@@ -15,6 +16,7 @@ connectDB();
 app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/admin", adminRoutes)
+app.use("/api/organizer-requests", organizerRequestRoutes)
 app.get("/", (req, res) => {
   res.json({
     message: "Event Tracking API is running",
