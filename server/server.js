@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import adminRoutes from "./routes/adminRoutes.js"
+import authRoutes from "./routes/authRoutes.js"
+import userRoutes from "./routes/userRoutes.js"
 dotenv.config();
 
 const app = express();
@@ -9,7 +12,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 connectDB();
-
+app.use("/api/auth", authRoutes)
+app.use("/api/users", userRoutes)
+app.use("/api/admin", adminRoutes)
 app.get("/", (req, res) => {
   res.json({
     message: "Event Tracking API is running",
