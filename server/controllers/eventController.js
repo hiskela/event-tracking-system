@@ -284,3 +284,58 @@ export const getOrganizerDashboard = async (req, res) => {
     });
   }
 };
+export const getEventRegistrations = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({
+        message: "Event not found",
+      });
+    }
+
+    if (event.organizer.toString() !== req.user.userId) {
+      return res.status(403).json({
+        message: "You can only manage your own events",
+      });
+    }
+
+    const registrations = await Registration.find({
+      event: event._id,
+    })
+      .populate("participant", "name email")
+      .sort({ createdAt: -1 });
+
+    const activeRegistrations = registrations.filter(
+      (registration) => registration.status !== "cancelled"
+    );
+
+    const totalRegistrations = activeRegistrations.length;
+
+    const totalAttendees = activeRegistrations.filter(
+      (registration) => registration.checkedIn
+    ).length;
+
+    const availableSeats = Math.max(
+      event.capacity - totalRegistrations,
+      0
+    );
+
+    res.status(200).json({
+      event,
+      registrations,
+      stats: {
+        totalRegistrations,
+        totalAttendees,
+        availableSeats,
+        capacity: event.capacity,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Failed to fetch event registrations",
+    });
+  }
+};

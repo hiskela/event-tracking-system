@@ -12,6 +12,7 @@ import Home from './pages/Home'
 import OrganizerEvents from "./pages/OrganizerEvents";
 import OrganizerDashboard from './pages/OrganizerDashboard'
 import CreateEvent from "./pages/CreateEvent";
+import ManageEvent from './pages/ManageEvent'
 function App() {
 
   return (
@@ -50,6 +51,10 @@ function App() {
 <Route
   path="/organizer/dashboard"
   element={<OrganizerDashboard />}
+/>
+<Route
+  path="/organizer/events/:id"
+  element={<ManageEvent />}
 />
  </Routes>
     </>

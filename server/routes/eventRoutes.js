@@ -7,7 +7,8 @@ getEvent,
 updateEvent,
 deleteEvent,
 getMyEvents,
-getOrganizerDashboard
+getOrganizerDashboard,
+getEventRegistrations
 } from "../controllers/eventController.js";
 
 const router = express.Router();
@@ -24,6 +25,12 @@ router.get(
   protect,
   authorize("organizer"),
   getOrganizerDashboard
+);
+router.get(
+  "/:id/registrations",
+  protect,
+  authorize("organizer"),
+  getEventRegistrations
 );
 router.get("/:id", getEvent);
 
