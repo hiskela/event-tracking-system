@@ -4,8 +4,11 @@ import QRScannerTest from './pages/QRScannerTest'
 import ParticipantDashboard from './pages/ParticipantDashboard'
 import MyRegistrations from './pages/MyRegistrations'
 import Ticket from './pages/Ticket'
+import AdminOrganizerRequests from "./pages/AdminOrganizerRequests";
 import Login from "./pages/Login"
 import Register from './pages/Register'
+import OrganizerRequest from './pages/OrganizerRequest'
+import Home from './pages/Home'
 import OrganizerDashboard from './pages/OrganizerDashboard'
 function App() {
 
@@ -13,6 +16,7 @@ function App() {
     <>
 
  <Routes>
+<Route path="/" element={<Home />} />
 <Route path="/login" element={<Login />} />
 <Route path="/register" element={<Register />} />
      <Route path="/qr-test" element={<QRScannerTest />} /> 
@@ -20,6 +24,14 @@ function App() {
         path="/participant/dashboard"
         element={<ParticipantDashboard />}
       />
+<Route
+  path="/participant/organizer-request"
+  element={<OrganizerRequest />}
+/>
+<Route
+  path="/admin/organizer-requests"
+  element={<AdminOrganizerRequests />}
+/>
 <Route
   path="/participant/my-registrations"
   element={<MyRegistrations />}
