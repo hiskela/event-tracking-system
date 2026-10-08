@@ -14,6 +14,9 @@ import OrganizerDashboard from './pages/OrganizerDashboard'
 import CreateEvent from "./pages/CreateEvent";
 import ManageEvent from './pages/ManageEvent'
 import EditEvent from './pages/EditEvent'
+import Events from "./pages/Events"
+
+
 function App() {
 
   return (
@@ -28,6 +31,7 @@ function App() {
         path="/participant/dashboard"
         element={<ParticipantDashboard />}
       />
+<Route path="/events" element={<Events />} />
 <Route path="/organizer/events/create" element={<CreateEvent />} />
 <Route
   path="/organizer/events"
