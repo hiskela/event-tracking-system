@@ -13,6 +13,7 @@ import OrganizerEvents from "./pages/OrganizerEvents";
 import OrganizerDashboard from './pages/OrganizerDashboard'
 import CreateEvent from "./pages/CreateEvent";
 import ManageEvent from './pages/ManageEvent'
+import EditEvent from './pages/EditEvent'
 function App() {
 
   return (
@@ -55,6 +56,10 @@ function App() {
 <Route
   path="/organizer/events/:id"
   element={<ManageEvent />}
+/>
+<Route
+  path="/organizer/events/:id/edit"
+  element={<EditEvent />}
 />
  </Routes>
     </>
