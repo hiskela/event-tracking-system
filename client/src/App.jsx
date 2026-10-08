@@ -9,7 +9,9 @@ import Login from "./pages/Login"
 import Register from './pages/Register'
 import OrganizerRequest from './pages/OrganizerRequest'
 import Home from './pages/Home'
+import OrganizerEvents from "./pages/OrganizerEvents";
 import OrganizerDashboard from './pages/OrganizerDashboard'
+import CreateEvent from "./pages/CreateEvent";
 function App() {
 
   return (
@@ -24,6 +26,11 @@ function App() {
         path="/participant/dashboard"
         element={<ParticipantDashboard />}
       />
+<Route path="/organizer/events/create" element={<CreateEvent />} />
+<Route
+  path="/organizer/events"
+  element={<OrganizerEvents />}
+/>
 <Route
   path="/participant/organizer-request"
   element={<OrganizerRequest />}
