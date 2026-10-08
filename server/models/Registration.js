@@ -19,12 +19,16 @@ const registrationSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-
+qrCode: {
+  type: String,
+  default: "",
+},
     status: {
       type: String,
       enum: ["registered", "cancelled", "attended"],
       default: "registered",
     },
+
 
     checkedIn: {
       type: Boolean,

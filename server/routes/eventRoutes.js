@@ -7,6 +7,7 @@ getEvent,
 updateEvent,
 deleteEvent,
 getMyEvents,
+getOrganizerDashboard
 } from "../controllers/eventController.js";
 
 const router = express.Router();
@@ -17,6 +18,12 @@ router.get(
   protect,
   authorize("organizer"),
   getMyEvents
+);
+router.get(
+  "/organizer-dashboard",
+  protect,
+  authorize("organizer"),
+  getOrganizerDashboard
 );
 router.get("/:id", getEvent);
 

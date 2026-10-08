@@ -1,6 +1,6 @@
 import Event from "../models/Event.js";
 import Category from "../models/Category.js";
-
+import Registration from "../models/Registration.js";
 export const createEvent = async (req, res) => {
   try {
     const {
@@ -239,6 +239,48 @@ export const getMyEvents = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch your events",
+    });
+  }
+};
+export const getOrganizerDashboard = async (req, res) => {
+  try {
+    const events = await Event.find({
+      organizer: req.user.userId,
+    })
+      .populate("category", "name")
+      .sort({ createdAt: -1 });
+
+    const eventIds = events.map((event) => event._id);
+
+
+    const registrations = await Registration.find({
+      event: { $in: eventIds },
+    });
+
+    const totalEvents = events.length;
+
+    const publishedEvents = events.filter(
+      (event) => event.status === "published"
+    ).length;
+
+    const totalRegistrations = registrations.filter(
+      (registration) => registration.status !== "cancelled"
+    ).length;
+
+    const totalAttendees = registrations.filter(
+      (registration) => registration.checkedIn === true
+    ).length;
+
+    res.status(200).json({
+      totalEvents,
+      publishedEvents,
+      totalRegistrations,
+      totalAttendees,
+      recentEvents: events.slice(0, 5),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch organizer dashboard",
     });
   }
 };
