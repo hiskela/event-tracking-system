@@ -4,8 +4,8 @@ import {
   registerForEvent,
   getMyRegistrations,
   getMyRegistration,
-checkInParticipant,
-getParticipantDashboard,
+  checkInParticipant,
+  getParticipantDashboard,
 } from "../controllers/registrationController.js";
 
 const router = express.Router();
@@ -13,7 +13,7 @@ const router = express.Router();
 router.get(
   "/my-registrations",
   protect,
-  authorize("participant"),
+  authorize("participant", "organizer"),
   getMyRegistrations
 );
 
@@ -23,23 +23,25 @@ router.post(
   authorize("organizer"),
   checkInParticipant
 );
+
 router.get(
   "/dashboard",
   protect,
   authorize("participant"),
   getParticipantDashboard
 );
+
 router.get(
   "/:id",
   protect,
-  authorize("participant"),
+  authorize("participant", "organizer"),
   getMyRegistration
 );
 
 router.post(
   "/:eventId",
   protect,
-  authorize("participant"),
+  authorize("participant", "organizer"),
   registerForEvent
 );
 
