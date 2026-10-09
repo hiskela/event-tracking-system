@@ -1,9 +1,12 @@
+
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function Ticket() {
   const { id } = useParams();
-const navigate=useNavigate();
+  const navigate = useNavigate();
+
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -12,6 +15,11 @@ const navigate=useNavigate();
     const fetchTicket = async () => {
       try {
         const token = localStorage.getItem("token");
+
+        if (!token) {
+          navigate("/login");
+          return;
+        }
 
         const response = await fetch(
           `http://localhost:5000/api/registrations/${id}`,
@@ -37,113 +45,127 @@ const navigate=useNavigate();
     };
 
     fetchTicket();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-lg text-gray-600">Loading ticket...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-red-600">{error}</p>
-      </div>
-    );
-  }
+  }, [id, navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="mx-auto max-w-md">
- <button
-        onClick={() => navigate(-1)}
-        className="mb-4 flex items-center gap-2 rounded-lg bg-white px-4 py-2 font-medium text-gray-700 shadow hover:bg-gray-50"
-      >
-        ← Back
-      </button>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
 
-        <div className="overflow-hidden rounded-2xl bg-white shadow-lg">
+      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-5 rounded-lg border border-gray-200 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-100"
+        >
+          ← Back
+        </button>
 
-          <div className="bg-blue-600 p-6 text-center text-white">
-            <h1 className="text-2xl font-bold">
-              Event Ticket
-            </h1>
-<span></span>
-            <p className="mt-1">
-              {ticket.event?.title}
-            </p>
+        {loading ? (
+          <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
+            <p className="text-gray-600">Loading ticket...</p>
           </div>
+        ) : error ? (
+          <div className="rounded-2xl bg-white p-8 text-center shadow-sm">
+            <p className="text-red-600">{error}</p>
+            <button
+              onClick={() => navigate("/events")}
+              className="mt-5 rounded-lg bg-gray-900 px-5 py-3 text-white hover:bg-gray-700"
+            >
+              Browse Events
+            </button>
+          </div>
+        ) : ticket ? (
+          <div className="overflow-hidden rounded-2xl bg-white shadow-lg">
+            <div className="bg-blue-600 px-5 py-7 text-center text-white sm:px-8">
+              <p className="text-sm font-medium uppercase tracking-widest text-blue-100">
+                EventTrack
+              </p>
 
-          <div className="p-6">
-            <div className="text-center">
-              {ticket.qrCode && (
-                <img
-                  src={ticket.qrCode}
-                  alt="Event ticket QR code"
-                  className="mx-auto h-64 w-64"
-                />
+              <h1 className="mt-2 text-2xl font-bold sm:text-3xl">
+                Event Ticket
+              </h1>
+
+              <p className="mt-2 text-lg">
+                {ticket.event?.title}
+              </p>
+            </div>
+
+            <div className="p-5 sm:p-8">
+              {ticket.status === "cancelled" ? (
+                <div className="rounded-lg bg-red-50 p-4 text-center text-red-700">
+                  This registration has been cancelled. This ticket is no longer valid.
+                </div>
+              ) : (
+                <div className="text-center">
+                  {ticket.qrCode ? (
+                    <img
+                      src={ticket.qrCode}
+                      alt="Event ticket QR code"
+                      className="mx-auto h-56 w-56 max-w-full object-contain sm:h-64 sm:w-64"
+                    />
+                  ) : (
+                    <p className="text-gray-500">
+                      QR code is not available.
+                    </p>
+                  )}
+
+                  <p className="mt-3 break-all font-mono text-sm font-semibold text-gray-700">
+                    {ticket.ticketCode}
+                  </p>
+                </div>
               )}
-            </div>
 
-            <div className="mt-6 space-y-3 border-t pt-6">
-              <div>
-                <p className="text-sm text-gray-500">
-                  Participant
-                </p>
+              <div className="mt-6 space-y-4 border-t pt-6">
+                <div>
+                  <p className="text-sm text-gray-500">Participant</p>
+                  <p className="mt-1 font-semibold text-gray-900">
+                    {ticket.participant?.name || "Unknown participant"}
+                  </p>
+                </div>
 
-                <p className="font-semibold text-gray-900">
-                  {ticket.participant?.name}
-                </p>
+                <div>
+                  <p className="text-sm text-gray-500">Location</p>
+                  <p className="mt-1 font-semibold text-gray-900">
+                    {ticket.event?.location || "Unknown location"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">Event Date</p>
+                  <p className="mt-1 font-semibold text-gray-900">
+                    {ticket.event?.startDate
+                      ? new Date(
+                          ticket.event.startDate
+                        ).toLocaleString()
+                      : "Date unavailable"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">Ticket Status</p>
+                  <span
+                    className={`mt-1 inline-block rounded-full px-3 py-1 text-sm font-semibold ${
+                      ticket.status === "attended"
+                        ? "bg-green-100 text-green-700"
+                        : ticket.status === "cancelled"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-blue-100 text-blue-700"
+                    }`}
+                  >
+                    {ticket.status}
+                  </span>
+                </div>
               </div>
 
-              <div>
-                <p className="text-sm text-gray-500">
-                  Ticket Code
-                </p>
-
-                <p className="font-semibold text-gray-900">
-                  {ticket.ticketCode}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm text-gray-500">
-                  Location
-                </p>
-
-                <p className="font-semibold text-gray-900">
-                  {ticket.event?.location}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm text-gray-500">
-                  Event Date
-                </p>
-
-                <p className="font-semibold text-gray-900">
-                  {new Date(
-                    ticket.event?.startDate
-                  ).toLocaleString()}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm text-gray-500">
-                  Status
-                </p>
-
-                <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                  {ticket.status}
-                </span>
-              </div>
+              <button
+                onClick={() => navigate("/events")}
+                className="mt-7 w-full rounded-lg border border-gray-300 px-5 py-3 font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Browse More Events
+              </button>
             </div>
           </div>
-        </div>
-      </div>
+        ) : null}
+      </main>
     </div>
   );
 }
