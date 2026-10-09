@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.get("/", getCategories);
 
-router.post("/", protect, authorize("admin"), createCategory);
+router.post("/", protect, authorize("admin", "organizer"), createCategory);
 
 router.put("/:id", protect, authorize("admin"), updateCategory);
 

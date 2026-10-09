@@ -44,11 +44,7 @@ function RegisterEvent() {
       return;
     }
 
-   if (event.organizer.toString() === req.user.userId) {
-  return res.status(400).json({
-    message: "You cannot register for your own event",
-  });
-}
+   
 
     try {
       setRegistering(true);

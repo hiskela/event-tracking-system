@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 import { Link } from "react-router-dom";
-
+import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 function Events() {
   const [events, setEvents] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -8,7 +9,7 @@ function Events() {
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+const navigate=useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,43 +52,24 @@ function Events() {
       event.location.toLowerCase().includes(search.toLowerCase());
 
     const matchesCategory =
-      !category ||
-      event.category?._id === category;
+      !category || event.category?._id === category;
 
     return matchesSearch && matchesCategory;
   });
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link
-            to="/"
-            className="text-xl font-bold text-gray-900 sm:text-2xl"
-          >
-            EventTrack
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link
-              to="/login"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 sm:px-4"
-            >
-              Login
-            </Link>
-
-            <Link
-              to="/register"
-              className="rounded-lg bg-black px-3 py-2 text-sm font-medium text-white hover:bg-gray-800 sm:px-4"
-            >
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-        <div className="mb-8">
+       
+  <button
+            onClick={() => navigate(-1)}
+            className="mb-6 text-sm font-medium text-blue-600 hover:text-blue-800"
+          >
+            ← Back 
+          </button>
+ <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
             Explore Events
           </h1>

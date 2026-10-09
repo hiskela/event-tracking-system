@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function CreateEvent() {
   const navigate = useNavigate();
@@ -29,12 +30,16 @@ function CreateEvent() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/categories");
+        const response = await fetch(
+          "http://localhost:5000/api/categories"
+        );
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch categories");
+          throw new Error(
+            data.message || "Failed to fetch categories"
+          );
         }
 
         setCategories(data);
@@ -87,7 +92,9 @@ function CreateEvent() {
 
     const startDate = new Date(formData.startDate);
     const endDate = new Date(formData.endDate);
-    const registrationDeadline = new Date(formData.registrationDeadline);
+    const registrationDeadline = new Date(
+      formData.registrationDeadline
+    );
 
     if (endDate <= startDate) {
       setMessage("End date must be after start date");
@@ -96,7 +103,7 @@ function CreateEvent() {
 
     if (registrationDeadline > startDate) {
       setMessage(
-        "Registration deadline must be before or equal to the start date",
+        "Registration deadline must be before or equal to the start date"
       );
       return;
     }
@@ -111,7 +118,10 @@ function CreateEvent() {
       return;
     }
 
-    if (formData.category === "other" && !formData.customCategory.trim()) {
+    if (
+      formData.category === "other" &&
+      !formData.customCategory.trim()
+    ) {
       setMessage("Please enter a custom category");
       return;
     }
@@ -134,36 +144,92 @@ function CreateEvent() {
               Authorization: `Bearer ${token}`,
             },
             body: imageData,
-          },
+          }
         );
 
         const imageResult = await imageResponse.json();
 
         if (!imageResponse.ok) {
-          throw new Error(imageResult.message || "Image upload failed");
+          throw new Error(
+            imageResult.message || "Image upload failed"
+          );
         }
 
         imageUrl = imageResult.imageUrl;
       }
 
-      const eventResponse = await fetch("http://localhost:5000/api/events", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          image: imageUrl,
-          capacity: Number(formData.capacity),
-          price: Number(formData.price),
-        }),
-      });
+      let categoryId = formData.category;
+
+      if (formData.category === "other") {
+        const customCategoryName = formData.customCategory.trim();
+
+        const existingCategory = categories.find(
+          (category) =>
+            category.name.toLowerCase() ===
+            customCategoryName.toLowerCase()
+        );
+
+        if (existingCategory) {
+          categoryId = existingCategory._id;
+        } else {
+          const categoryResponse = await fetch(
+            "http://localhost:5000/api/categories",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                name: customCategoryName,
+                description: "",
+              }),
+            }
+          );
+
+          const categoryResult = await categoryResponse.json();
+
+          if (!categoryResponse.ok) {
+            throw new Error(
+              categoryResult.message ||
+                "Failed to create category"
+            );
+          }
+
+          categoryId = categoryResult._id;
+        }
+      }
+
+      const eventResponse = await fetch(
+        "http://localhost:5000/api/events",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: formData.title,
+            description: formData.description,
+            image: imageUrl,
+            category: categoryId,
+            location: formData.location,
+            startDate: formData.startDate,
+            endDate: formData.endDate,
+            registrationDeadline: formData.registrationDeadline,
+            capacity: Number(formData.capacity),
+            price: Number(formData.price),
+            status: formData.status,
+          }),
+        }
+      );
 
       const eventResult = await eventResponse.json();
 
       if (!eventResponse.ok) {
-        throw new Error(eventResult.message || "Failed to create event");
+        throw new Error(
+          eventResult.message || "Failed to create event"
+        );
       }
 
       navigate("/organizer/events");
@@ -175,12 +241,14 @@ function CreateEvent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+
+      <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-8">
           <button
             onClick={() => navigate("/organizer/events")}
-            className="mb-4 text-sm font-medium text-blue-600 hover:text-blue-800"
+            className="mb-4 text-sm font-medium text-blue-600 transition hover:text-blue-800"
           >
             ← Back to My Events
           </button>
@@ -189,7 +257,7 @@ function CreateEvent() {
             Create Event
           </h1>
 
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 sm:text-base">
             Create and publish a new event.
           </p>
         </div>
@@ -431,7 +499,7 @@ function CreateEvent() {
             <button
               type="button"
               onClick={() => navigate("/organizer/events")}
-              className="rounded-lg border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
             >
               Cancel
             </button>
@@ -439,13 +507,13 @@ function CreateEvent() {
             <button
               type="submit"
               disabled={loading}
-              className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Creating Event..." : "Create Event"}
             </button>
           </div>
         </form>
-      </div>
+      </main>
     </div>
   );
 }

@@ -12,7 +12,11 @@ export const registerForEvent = async (req, res) => {
         message: "Event not found",
       });
     }
-
+if (event.organizer.toString() === req.user.userId) {
+  return res.status(400).json({
+    message: "You cannot register for your own event",
+  });
+}
     if (event.status !== "published") {
       return res.status(400).json({
         message: "Registration is not available for this event",

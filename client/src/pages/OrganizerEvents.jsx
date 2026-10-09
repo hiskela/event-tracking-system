@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function OrganizerEvents() {
   const navigate = useNavigate();
@@ -81,15 +82,30 @@ function OrganizerEvents() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <p className="text-lg text-gray-600">Loading your events...</p>
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+
+        <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-4">
+          <p className="text-lg text-gray-600">
+            Loading your events...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-gray-100">
+      <Navbar />
+
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+        >
+          ← Back
+        </button>
+
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
@@ -127,7 +143,7 @@ function OrganizerEvents() {
 
             <button
               onClick={() => navigate("/organizer/events/create")}
-              className="mt-6 rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
+              className="mt-6 rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700"
             >
               Create Your First Event
             </button>
@@ -137,7 +153,7 @@ function OrganizerEvents() {
             {events.map((event) => (
               <div
                 key={event._id}
-                className="overflow-hidden rounded-xl bg-white shadow-sm"
+                className="overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md"
               >
                 {event.image ? (
                   <img
@@ -153,7 +169,7 @@ function OrganizerEvents() {
 
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-3">
-                    <h2 className="min-w-0 text-lg font-bold text-gray-900">
+                    <h2 className="min-w-0 break-words text-lg font-bold text-gray-900">
                       {event.title}
                     </h2>
 
@@ -212,7 +228,9 @@ function OrganizerEvents() {
                       <span className="font-medium text-gray-800">
                         Price:
                       </span>{" "}
-                      {event.price === 0 ? "Free" : `${event.price} ETB`}
+                      {event.price === 0
+                        ? "Free"
+                        : `${event.price} ETB`}
                     </p>
                   </div>
 
@@ -221,7 +239,7 @@ function OrganizerEvents() {
                       onClick={() =>
                         navigate(`/organizer/events/${event._id}`)
                       }
-                      className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+                      className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
                     >
                       Manage Event
                     </button>
@@ -230,14 +248,14 @@ function OrganizerEvents() {
                       onClick={() =>
                         navigate(`/organizer/events/${event._id}/edit`)
                       }
-                      className="rounded-lg border border-blue-600 px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50"
+                      className="rounded-lg border border-blue-600 px-4 py-2.5 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
                     >
                       Edit
                     </button>
 
                     <button
                       onClick={() => handleDelete(event._id)}
-                      className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 sm:col-span-2"
+                      className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 sm:col-span-2"
                     >
                       Delete
                     </button>
@@ -247,7 +265,7 @@ function OrganizerEvents() {
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -61,7 +61,7 @@ function Login() {
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4 py-8">
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-lg sm:p-8">
  <button
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
         className="mb-4 flex items-center gap-2 rounded-lg bg-white px-4 py-2 font-medium text-gray-700 shadow hover:bg-gray-50"
       >
         ← Back
