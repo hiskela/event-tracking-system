@@ -20,6 +20,12 @@ function Navbar() {
     navigate("/");
   };
 
+  const desktopLink =
+    "text-sm font-medium text-gray-700 transition hover:text-blue-600";
+
+  const mobileLink =
+    "rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100";
+
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
@@ -31,16 +37,13 @@ function Navbar() {
         </button>
 
         <div className="hidden items-center gap-5 md:flex">
-          <button
-            onClick={() => handleNavigate("/")}
-            className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
-          >
+          <button onClick={() => handleNavigate("/")} className={desktopLink}>
             Home
           </button>
 
           <button
             onClick={() => handleNavigate("/events")}
-            className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+            className={desktopLink}
           >
             Events
           </button>
@@ -49,7 +52,7 @@ function Navbar() {
             <>
               <button
                 onClick={() => handleNavigate("/participant/dashboard")}
-                className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+                className={desktopLink}
               >
                 Dashboard
               </button>
@@ -58,9 +61,18 @@ function Navbar() {
                 onClick={() =>
                   handleNavigate("/participant/my-registrations")
                 }
-                className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+                className={desktopLink}
               >
                 My Registrations
+              </button>
+
+              <button
+                onClick={() =>
+                  handleNavigate("/participant/organizer-request")
+                }
+                className={desktopLink}
+              >
+                Become an Organizer
               </button>
             </>
           )}
@@ -69,14 +81,14 @@ function Navbar() {
             <>
               <button
                 onClick={() => handleNavigate("/organizer/dashboard")}
-                className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+                className={desktopLink}
               >
                 Dashboard
               </button>
 
               <button
                 onClick={() => handleNavigate("/organizer/events")}
-                className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+                className={desktopLink}
               >
                 My Events
               </button>
@@ -87,16 +99,14 @@ function Navbar() {
             <>
               <button
                 onClick={() => handleNavigate("/admin/dashboard")}
-                className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+                className={desktopLink}
               >
                 Dashboard
               </button>
 
               <button
-                onClick={() =>
-                  handleNavigate("/admin/organizer-requests")
-                }
-                className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+                onClick={() => handleNavigate("/admin/organizer-requests")}
+                className={desktopLink}
               >
                 Organizer Requests
               </button>
@@ -142,14 +152,14 @@ function Navbar() {
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6 lg:px-8">
             <button
               onClick={() => handleNavigate("/")}
-              className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+              className={mobileLink}
             >
               Home
             </button>
 
             <button
               onClick={() => handleNavigate("/events")}
-              className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+              className={mobileLink}
             >
               Events
             </button>
@@ -158,7 +168,7 @@ function Navbar() {
               <>
                 <button
                   onClick={() => handleNavigate("/participant/dashboard")}
-                  className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                  className={mobileLink}
                 >
                   Dashboard
                 </button>
@@ -167,9 +177,18 @@ function Navbar() {
                   onClick={() =>
                     handleNavigate("/participant/my-registrations")
                   }
-                  className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                  className={mobileLink}
                 >
                   My Registrations
+                </button>
+
+                <button
+                  onClick={() =>
+                    handleNavigate("/participant/organizer-request")
+                  }
+                  className={mobileLink}
+                >
+                  Become an Organizer
                 </button>
               </>
             )}
@@ -178,14 +197,14 @@ function Navbar() {
               <>
                 <button
                   onClick={() => handleNavigate("/organizer/dashboard")}
-                  className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                  className={mobileLink}
                 >
                   Dashboard
                 </button>
 
                 <button
                   onClick={() => handleNavigate("/organizer/events")}
-                  className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                  className={mobileLink}
                 >
                   My Events
                 </button>
@@ -196,16 +215,14 @@ function Navbar() {
               <>
                 <button
                   onClick={() => handleNavigate("/admin/dashboard")}
-                  className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                  className={mobileLink}
                 >
                   Dashboard
                 </button>
 
                 <button
-                  onClick={() =>
-                    handleNavigate("/admin/organizer-requests")
-                  }
-                  className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                  onClick={() => handleNavigate("/admin/organizer-requests")}
+                  className={mobileLink}
                 >
                   Organizer Requests
                 </button>
@@ -216,7 +233,7 @@ function Navbar() {
               <>
                 <button
                   onClick={() => handleNavigate("/login")}
-                  className="rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                  className={mobileLink}
                 >
                   Login
                 </button>

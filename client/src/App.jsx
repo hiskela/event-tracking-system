@@ -17,7 +17,7 @@ import EditEvent from "./pages/EditEvent";
 import Events from "./pages/Events";
 import EventDetails from "./pages/EventDetails";
 import RegisterEvent from "./pages/RegisterEvent";
-
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -31,6 +31,7 @@ function App() {
           path="/participant/dashboard"
           element={<ParticipantDashboard />}
         />
+<Route path="/admin/dashboard" element={<AdminDashboard />} />
 <Route
   path="/events/:id/register"
   element={<RegisterEvent />}
