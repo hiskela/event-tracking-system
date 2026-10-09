@@ -18,11 +18,12 @@ import Events from "./pages/Events";
 import EventDetails from "./pages/EventDetails";
 import RegisterEvent from "./pages/RegisterEvent";
 import AdminDashboard from "./pages/AdminDashboard";
-
+import AdminUsers from "./pages/AdminUsers";
 function App() {
   return (
     <>
       <Routes>
+<Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
