@@ -70,5 +70,80 @@ router.get("/users", protect, authorize("admin"), async (req, res) => {
     });
   }
 });
+router.get("/events", protect, authorize("admin"), async (req, res) => {
+  try {
+    const { search = "", status = "" } = req.query;
+    const filter = {};
+    const validStatuses = ["draft", "published", "cancelled", "completed"];
+
+    if (search.trim()) {
+      const safeSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      filter.$or = [
+        { title: { $regex: safeSearch, $options: "i" } },
+        { location: { $regex: safeSearch, $options: "i" } },
+      ];
+    }
+
+    if (status && validStatuses.includes(status)) {
+      filter.status = status;
+    }
+
+    const events = await Event.find(filter)
+      .populate("organizer", "name email")
+      .populate("category", "name")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      count: events.length,
+      events,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch events",
+    });
+  }
+});
+
+router.patch(
+  "/events/:id/status",
+  protect,
+  authorize("admin"),
+  async (req, res) => {
+    try {
+      const { status } = req.body;
+      const validStatuses = ["draft", "published", "cancelled", "completed"];
+
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          message: "Invalid event status",
+        });
+      }
+
+      const event = await Event.findByIdAndUpdate(
+        req.params.id,
+        { status },
+        { new: true, runValidators: true }
+      )
+        .populate("organizer", "name email")
+        .populate("category", "name");
+
+      if (!event) {
+        return res.status(404).json({
+          message: "Event not found",
+        });
+      }
+
+      res.status(200).json({
+        message: "Event status updated successfully",
+        event,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Failed to update event status",
+      });
+    }
+  }
+);
 
 export default router;

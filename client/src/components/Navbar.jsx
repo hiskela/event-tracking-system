@@ -109,6 +109,12 @@ function Navbar() {
 >
   Manage Users
 </button>
+<button
+  onClick={() => handleNavigate("/admin/events")}
+  className={desktopLink}
+>
+  Manage Events
+</button>
               <button
                 onClick={() => handleNavigate("/admin/organizer-requests")}
                 className={desktopLink}
@@ -229,6 +235,12 @@ function Navbar() {
   className={mobileLink}
 >
   Manage Users
+</button>
+<button
+  onClick={() => handleNavigate("/admin/events")}
+  className={mobileLink}
+>
+  Manage Events
 </button>
                 <button
                   onClick={() => handleNavigate("/admin/organizer-requests")}

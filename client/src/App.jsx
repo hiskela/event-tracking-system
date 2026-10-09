@@ -19,6 +19,9 @@ import EventDetails from "./pages/EventDetails";
 import RegisterEvent from "./pages/RegisterEvent";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
+import AdminEvents from "./pages/AdminEvents";
+
+
 function App() {
   return (
     <>
@@ -26,6 +29,7 @@ function App() {
 <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+<Route path="/admin/events" element={<AdminEvents />} />
         <Route path="/register" element={<Register />} />
         <Route path="/qr-test" element={<QRScannerTest />} />
         <Route
