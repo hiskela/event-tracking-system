@@ -6,6 +6,7 @@ import {
   getMyRegistration,
   checkInParticipant,
   getParticipantDashboard,
+cancelRegistration
 } from "../controllers/registrationController.js";
 
 const router = express.Router();
@@ -30,7 +31,12 @@ router.get(
   authorize("participant"),
   getParticipantDashboard
 );
-
+router.patch(
+  "/:id/cancel",
+  protect,
+  authorize("participant", "organizer"),
+  cancelRegistration
+);
 router.get(
   "/:id",
   protect,

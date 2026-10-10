@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -9,44 +8,89 @@ function MyRegistrations() {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [cancellingId, setCancellingId] = useState("");
+
+  const fetchRegistrations = async () => {
+    try {
+      setError("");
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await fetch(
+        "http://localhost:5000/api/registrations/my-registrations",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to fetch registrations"
+        );
+      }
+
+      setRegistrations(data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchRegistrations = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-
-        const response = await fetch(
-          "http://localhost:5000/api/registrations/my-registrations",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to fetch registrations"
-          );
-        }
-
-        setRegistrations(data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRegistrations();
   }, [navigate]);
+
+  const handleCancel = async (registrationId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this registration?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setCancellingId(registrationId);
+      setMessage("");
+      setError("");
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:5000/api/registrations/${registrationId}/cancel`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to cancel registration"
+        );
+      }
+
+      setMessage(data.message || "Registration cancelled successfully.");
+      await fetchRegistrations();
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setCancellingId("");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,21 +114,34 @@ function MyRegistrations() {
           </p>
         </div>
 
+        {message && (
+          <div className="mb-6 rounded-lg bg-green-100 p-4 text-green-800">
+            {message}
+          </div>
+        )}
+
+        {error && (
+          <div className="mb-6 rounded-lg bg-red-100 p-4 text-red-700">
+            {error}
+            {!loading && registrations.length > 0 && (
+              <button
+                onClick={() => {
+                  setError("");
+                  fetchRegistrations();
+                }}
+                className="ml-3 font-semibold underline"
+              >
+                Try again
+              </button>
+            )}
+          </div>
+        )}
+
         {loading ? (
           <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
             <p className="text-gray-600">
               Loading your registrations...
             </p>
-          </div>
-        ) : error ? (
-          <div className="rounded-2xl bg-white p-8 text-center shadow-sm">
-            <p className="font-medium text-red-600">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 rounded-lg bg-gray-900 px-5 py-3 text-white hover:bg-gray-700"
-            >
-              Try Again
-            </button>
           </div>
         ) : registrations.length === 0 ? (
           <div className="rounded-2xl bg-white px-5 py-12 text-center shadow-sm sm:px-10">
@@ -152,7 +209,9 @@ function MyRegistrations() {
 
                     <div className="mt-4 space-y-3 text-sm text-gray-600">
                       <p>
-                        📍 {registration.event?.location || "Unknown location"}
+                        📍{" "}
+                        {registration.event?.location ||
+                          "Unknown location"}
                       </p>
 
                       {registration.event?.startDate && (
@@ -192,6 +251,20 @@ function MyRegistrations() {
                     >
                       View Ticket
                     </button>
+
+                    {registration.status === "registered" && (
+                      <button
+                        onClick={() =>
+                          handleCancel(registration._id)
+                        }
+                        disabled={cancellingId === registration._id}
+                        className="mt-3 w-full rounded-lg border border-red-300 px-4 py-3 font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {cancellingId === registration._id
+                          ? "Cancelling..."
+                          : "Cancel Registration"}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

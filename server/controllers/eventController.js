@@ -284,9 +284,11 @@ export const getOrganizerDashboard = async (req, res) => {
     });
   }
 };
+
 export const getEventRegistrations = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id)
+      .populate("category", "name");
 
     if (!event) {
       return res.status(404).json({
@@ -310,23 +312,33 @@ export const getEventRegistrations = async (req, res) => {
       (registration) => registration.status !== "cancelled"
     );
 
-    const totalRegistrations = activeRegistrations.length;
+    const registeredCount = registrations.filter(
+      (registration) => registration.status === "registered"
+    ).length;
 
-    const totalAttendees = activeRegistrations.filter(
-      (registration) => registration.checkedIn
+    const cancelledCount = registrations.filter(
+      (registration) => registration.status === "cancelled"
+    ).length;
+
+    const attendedCount = registrations.filter(
+      (registration) =>
+        registration.status === "attended" ||
+        registration.checkedIn
     ).length;
 
     const availableSeats = Math.max(
-      event.capacity - totalRegistrations,
+      event.capacity - activeRegistrations.length,
       0
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       event,
       registrations,
       stats: {
-        totalRegistrations,
-        totalAttendees,
+        totalRegistrations: activeRegistrations.length,
+        registeredCount,
+        cancelledCount,
+        totalAttendees: attendedCount,
         availableSeats,
         capacity: event.capacity,
       },
@@ -334,7 +346,7 @@ export const getEventRegistrations = async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to fetch event registrations",
     });
   }

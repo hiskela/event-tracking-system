@@ -69,6 +69,11 @@ const eventSchema = new mongoose.Schema(
       enum: ["draft", "published", "cancelled", "completed"],
       default: "draft",
     },
+registeredCount: {
+  type: Number,
+  default: 0,
+  min: 0,
+},
   },
   {
     timestamps: true,

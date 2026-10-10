@@ -56,7 +56,6 @@ function ManageEvent() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-
         <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-4">
           <p className="text-gray-600">Loading event...</p>
         </div>
@@ -64,35 +63,65 @@ function ManageEvent() {
     );
   }
 
-  if (message) {
+  if (message || !event || !stats) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
+        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+          <button
+            onClick={() => navigate("/organizer/events")}
+            className="mb-6 text-sm font-medium text-blue-600 hover:text-blue-800"
+          >
+            ← Back to My Events
+          </button>
 
-        <div className="px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-5xl">
-            <button
-              onClick={() => navigate("/organizer/events")}
-              className="mb-6 text-sm font-medium text-blue-600 hover:text-blue-800"
-            >
-              ← Back to My Events
-            </button>
-
-            <div className="rounded-xl bg-red-50 p-5 text-red-700">
-              {message}
-            </div>
+          <div className="rounded-xl bg-red-50 p-5 text-red-700">
+            {message || "Event information is unavailable."}
           </div>
         </div>
       </div>
     );
   }
 
+  const statCards = [
+    {
+      label: "Active Registrations",
+      value: stats.totalRegistrations,
+      color: "text-blue-600",
+    },
+    {
+      label: "Awaiting Check-in",
+      value: stats.registeredCount,
+      color: "text-amber-600",
+    },
+    {
+      label: "Attended",
+      value: stats.totalAttendees,
+      color: "text-green-600",
+    },
+    {
+      label: "Cancelled",
+      value: stats.cancelledCount,
+      color: "text-red-600",
+    },
+    {
+      label: "Available Seats",
+      value: stats.availableSeats,
+      color: "text-indigo-600",
+    },
+    {
+      label: "Event Capacity",
+      value: stats.capacity,
+      color: "text-gray-900",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
       <main className="px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-7xl">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <button
@@ -117,6 +146,13 @@ function ManageEvent() {
             >
               Edit Event
             </button>
+<button
+  onClick={() => navigate(`/qr-test?eventId=${event._id}`)}
+  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
+>
+  <span>▦</span>
+  QR Check-In
+</button>
           </div>
 
           <div className="mb-8 overflow-hidden rounded-xl bg-white shadow-sm">
@@ -189,34 +225,20 @@ function ManageEvent() {
             </div>
           </div>
 
-          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl bg-white p-5 shadow-sm">
-              <p className="text-sm text-gray-500">Registrations</p>
-              <p className="mt-2 text-3xl font-bold text-gray-900">
-                {stats.totalRegistrations}
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-white p-5 shadow-sm">
-              <p className="text-sm text-gray-500">Checked In</p>
-              <p className="mt-2 text-3xl font-bold text-green-600">
-                {stats.totalAttendees}
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-white p-5 shadow-sm">
-              <p className="text-sm text-gray-500">Available Seats</p>
-              <p className="mt-2 text-3xl font-bold text-blue-600">
-                {stats.availableSeats}
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-white p-5 shadow-sm">
-              <p className="text-sm text-gray-500">Capacity</p>
-              <p className="mt-2 text-3xl font-bold text-gray-900">
-                {stats.capacity}
-              </p>
-            </div>
+          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {statCards.map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-xl bg-white p-5 shadow-sm"
+              >
+                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p
+                  className={`mt-2 text-3xl font-bold ${stat.color}`}
+                >
+                  {stat.value}
+                </p>
+              </div>
+            ))}
           </div>
 
           <div className="rounded-xl bg-white shadow-sm">
@@ -226,7 +248,7 @@ function ManageEvent() {
               </h2>
 
               <p className="mt-1 text-sm text-gray-500">
-                People registered for this event.
+                All registration records for this event, including cancelled registrations.
               </p>
             </div>
 
@@ -236,25 +258,21 @@ function ManageEvent() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[700px] text-left text-sm">
+                <table className="w-full min-w-[760px] text-left text-sm">
                   <thead className="bg-gray-50 text-gray-600">
                     <tr>
                       <th className="px-5 py-4 font-medium">
                         Participant
                       </th>
-
                       <th className="px-5 py-4 font-medium">
                         Ticket Code
                       </th>
-
                       <th className="px-5 py-4 font-medium">
                         Registration
                       </th>
-
                       <th className="px-5 py-4 font-medium">
                         Attendance
                       </th>
-
                       <th className="px-5 py-4 font-medium">
                         Registered At
                       </th>
@@ -269,7 +287,6 @@ function ManageEvent() {
                             {registration.participant?.name ||
                               "Unknown participant"}
                           </p>
-
                           <p className="text-gray-500">
                             {registration.participant?.email || "-"}
                           </p>
@@ -284,6 +301,8 @@ function ManageEvent() {
                             className={`rounded-full px-3 py-1 text-xs font-medium ${
                               registration.status === "cancelled"
                                 ? "bg-red-100 text-red-700"
+                                : registration.status === "attended"
+                                ? "bg-green-100 text-green-700"
                                 : "bg-blue-100 text-blue-700"
                             }`}
                           >

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 
 const API_URL = "http://localhost:5000/api/admin/events";
 
@@ -123,9 +124,11 @@ function AdminEvents() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8">
+    <div className="min-h-screen bg-gray-50 ">
+<Navbar/>       
+ <div className="mx-auto max-w-7xl">
+     
+ <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600">
             Administration
           </p>
