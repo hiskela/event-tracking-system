@@ -10,6 +10,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js"
 import registrationRoutes from "./routes/registrationRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js"
+import notificationRoutes from "./routes/notificationRoutes.js"
 dotenv.config();
 
 const app = express();
@@ -24,6 +25,7 @@ app.use("/api/registrations", registrationRoutes);
 app.use("/api/categories", categoryRoutes)
 app.use("/api/events", eventRoutes);
 app.use("/api/uploads", uploadRoutes)
+app.use("/api/notifications", notificationRoutes)
 app.get("/", (req, res) => {
   res.json({
     message: "Event Tracking API is running",

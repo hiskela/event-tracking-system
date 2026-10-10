@@ -2,6 +2,7 @@ import crypto from "crypto";
 import QRCode from "qrcode"
 import Event from "../models/Event.js";
 import Registration from "../models/Registration.js";
+import Notification from "../models/Notification.js";
 
 
 export const registerForEvent = async (req, res) => {
@@ -85,11 +86,21 @@ export const registerForEvent = async (req, res) => {
       });
     }
 
+    await Notification.create({
+      recipient: req.user.userId,
+      title: "Event Registration Successful",
+      message: `You have successfully registered for "${event.title}". Your ticket is ready.`,
+      type: "registration",
+      event: event._id,
+    });
+
     return res.status(201).json({
       message: "Registration successful",
       registration,
     });
   } catch (error) {
+    console.error("Register for event error:", error);
+
     if (error.code === 11000) {
       return res.status(409).json({
         message: "You are already registered for this event",
@@ -101,6 +112,7 @@ export const registerForEvent = async (req, res) => {
     });
   }
 };
+
 
 export const getMyRegistrations = async (req, res) => {
   try {
@@ -269,6 +281,7 @@ export const getParticipantDashboard = async (req, res) => {
     });
   }
 };
+
 export const cancelRegistration = async (req, res) => {
   try {
     const registration = await Registration.findOne({
