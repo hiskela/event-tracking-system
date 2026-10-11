@@ -17,8 +17,14 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-connectDB();
-startEventReminderJob();
+connectDB()
+  .then(() => {
+    startEventReminderJob();
+  })
+  .catch((error) => {
+    console.error("Database connection failed:", error);
+    process.exit(1);
+  });
 app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/admin", adminRoutes)

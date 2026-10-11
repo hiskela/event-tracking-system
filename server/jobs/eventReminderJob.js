@@ -28,21 +28,30 @@ const sendReminder = async (event, reminderType, title, message) => {
 
   recipientIds.add(event.organizer.toString());
 
-  const notifications = [...recipientIds].map((recipient) => ({
-    recipient,
-    title,
-    message,
-    type: "event_reminder",
-    event: event._id,
-  }));
-
-  await Notification.insertMany(notifications);
-
   await ReminderDelivery.create({
     event: event._id,
     reminderType,
     sentAt: new Date(),
   });
+
+  try {
+    await Notification.insertMany(
+      [...recipientIds].map((recipient) => ({
+        recipient,
+        title,
+        message,
+        type: "event_reminder",
+        event: event._id,
+      }))
+    );
+  } catch (error) {
+    await ReminderDelivery.deleteOne({
+      event: event._id,
+      reminderType,
+    });
+
+    throw error;
+  }
 };
 
 const processReminderWindow = async ({
@@ -51,15 +60,15 @@ const processReminderWindow = async ({
   title,
 }) => {
   const now = Date.now();
-  const offsetMs = offsetHours * 60 * 60 * 1000;
-  const windowMs = 30 * 60 * 1000;
+  const targetTime = now + offsetHours * 60 * 60 * 1000;
+  const gracePeriod = 30 * 60 * 1000;
 
   const events = await Event.find({
     status: "published",
     startDate: {
       $gt: new Date(now),
-      $gte: new Date(now + offsetMs - windowMs),
-      $lte: new Date(now + offsetMs),
+      $gte: new Date(targetTime - 60 * 1000),
+      $lte: new Date(targetTime + gracePeriod),
     },
   });
 
@@ -72,12 +81,10 @@ const processReminderWindow = async ({
         `"${event.title}" starts in approximately ${offsetHours} hour${offsetHours === 1 ? "" : "s"}. Location: ${event.location}.`
       );
     } catch (error) {
-      if (error.code !== 11000) {
-        console.error(
-          `Reminder failed for event ${event._id}:`,
-          error
-        );
-      }
+      console.error(
+        `Reminder failed for event ${event._id}:`,
+        error
+      );
     }
   }
 };
