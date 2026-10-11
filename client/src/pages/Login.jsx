@@ -11,7 +11,7 @@ function Login() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+const [showPassword, setShowPassword] = useState(false);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -103,25 +103,37 @@ function Login() {
             />
           </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
+         
+<div>
+  <label
+    htmlFor="password"
+    className="mb-2 block text-sm font-semibold text-gray-700"
+  >
+    Password
+  </label>
 
-            <input
-              id="password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </div>
+  <div className="relative">
+    <input
+      id="password"
+      name="password"
+      type={showPassword ? "text" : "password"}
+      value={formData.password}
+      onChange={handleChange}
+      required
+      placeholder="Enter your password"
+      className="w-full rounded-xl border border-gray-300 px-4 py-3 pr-20 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowPassword((current) => !current)}
+      className="absolute inset-y-0 right-3 my-auto h-fit text-sm font-semibold text-blue-600 transition hover:text-blue-800"
+    >
+      {showPassword ? "Hide" : "Show"}
+    </button>
+  </div>
+</div>
+
 
           <button
             type="submit"

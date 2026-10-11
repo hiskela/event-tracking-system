@@ -43,7 +43,7 @@ export const markNotificationAsRead = async (req, res) => {
         recipient: req.user.userId,
       },
       { isRead: true },
-      { new: true, runValidators: true }
+      { returnDocument: "after", runValidators: true }
     );
 
     if (!notification) {
@@ -81,6 +81,32 @@ export const markAllNotificationsAsRead = async (req, res) => {
     console.error("Mark all notifications read error:", error);
     res.status(500).json({
       message: "Failed to update notifications",
+    });
+  }
+};
+
+
+export const deleteNotification = async (req, res) => {
+  try {
+    const notification = await Notification.findOneAndDelete({
+      _id: req.params.id,
+      recipient: req.user.userId,
+    });
+
+    if (!notification) {
+      return res.status(404).json({
+        message: "Notification not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Notification deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete notification error:", error);
+
+    return res.status(500).json({
+      message: "Failed to delete notification",
     });
   }
 };
