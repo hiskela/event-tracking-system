@@ -131,6 +131,11 @@ export const updateEvent = async (req, res) => {
         message: "You can only update your own events",
       });
     }
+if (new Date(event.endDate).getTime() < Date.now()) {
+  return res.status(400).json({
+    message: "You cannot edit an event that has already finished.",
+  });
+}
 
     const {
       title,

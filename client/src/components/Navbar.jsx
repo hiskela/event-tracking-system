@@ -22,31 +22,29 @@ function Navbar() {
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const roleLinks = {
-    participant: [
-      { label: "Dashboard", path: "/participant/dashboard" },
-      {
-        label: "My Registrations",
-        path: "/participant/my-registrations",
-      },
-      {
-        label: "Become an Organizer",
-        path: "/participant/organizer-request",
-      },
-    ],
-    organizer: [
-      { label: "Dashboard", path: "/organizer/dashboard" },
-      { label: "My Events", path: "/organizer/events" },
-    ],
-    admin: [
-      { label: "Dashboard", path: "/admin/dashboard" },
-      { label: "Manage Users", path: "/admin/users" },
-      { label: "Manage Events", path: "/admin/events" },
-      {
-        label: "Organizer Requests",
-        path: "/admin/organizer-requests",
-      },
-    ],
-  };
+  participant: [
+    { label: "Dashboard", path: "/participant/dashboard" },
+    { label: "My Registrations", path: "/my-registrations" },
+    {
+      label: "Become an Organizer",
+      path: "/participant/organizer-request",
+    },
+  ],
+  organizer: [
+    { label: "Dashboard", path: "/organizer/dashboard" },
+    { label: "My Events", path: "/organizer/events" },
+    { label: "My Registrations", path: "/my-registrations" },
+  ],
+  admin: [
+    { label: "Dashboard", path: "/admin/dashboard" },
+    { label: "Manage Users", path: "/admin/users" },
+    { label: "Manage Events", path: "/admin/events" },
+    {
+      label: "Organizer Requests",
+      path: "/admin/organizer-requests",
+    },
+  ],
+};
 
   const menuItems = roleLinks[user?.role] || [];
 

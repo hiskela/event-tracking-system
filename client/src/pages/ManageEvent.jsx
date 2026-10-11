@@ -12,6 +12,7 @@ function ManageEvent() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
+
   useEffect(() => {
     const fetchEventData = async () => {
       try {
@@ -82,6 +83,9 @@ function ManageEvent() {
       </div>
     );
   }
+const eventEndTime = new Date(event.endDate).getTime();
+const isFinished = Number.isFinite(eventEndTime) && eventEndTime < Date.now();
+
 
   const statCards = [
     {
@@ -140,12 +144,18 @@ function ManageEvent() {
               </p>
             </div>
 
-            <button
-              onClick={() => navigate(`/organizer/events/${id}/edit`)}
-              className="w-full rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700 sm:w-auto"
-            >
-              Edit Event
-            </button>
+         
+<button
+  onClick={() => navigate(`/organizer/events/${id}/edit`)}
+  disabled={isFinished}
+  className={`w-full rounded-lg px-5 py-3 text-sm font-medium sm:w-auto ${
+    isFinished
+      ? "cursor-not-allowed bg-gray-300 text-gray-500"
+      : "bg-blue-600 text-white hover:bg-blue-700"
+  }`}
+>
+  {isFinished ? "Event Finished" : "Edit Event"}
+</button>
 <button
   onClick={() => navigate(`/qr-test?eventId=${event._id}`)}
   className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"

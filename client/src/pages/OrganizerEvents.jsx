@@ -75,7 +75,6 @@ function OrganizerEvents() {
       setError(error.message);
     }
   };
-
   const formatDate = (date) => {
     return new Date(date).toLocaleString();
   };
@@ -151,6 +150,7 @@ function OrganizerEvents() {
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => (
+
               <div
                 key={event._id}
                 className="overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md"
@@ -244,14 +244,28 @@ function OrganizerEvents() {
                       Manage Event
                     </button>
 
-                    <button
-                      onClick={() =>
-                        navigate(`/organizer/events/${event._id}/edit`)
-                      }
-                      className="rounded-lg border border-blue-600 px-4 py-2.5 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
-                    >
-                      Edit
-                    </button>
+  
+<button
+  onClick={() =>
+    navigate(`/organizer/events/${event._id}/edit`)
+  }
+  disabled={new Date(event.endDate).getTime() < Date.now()}
+  title={
+    new Date(event.endDate).getTime() < Date.now()
+      ? "You cannot edit an event that has finished."
+      : "Edit this event"
+  }
+  className={`rounded-lg px-4 py-2.5 text-sm font-medium transition ${
+    new Date(event.endDate).getTime() < Date.now()
+      ? "cursor-not-allowed bg-gray-300 text-gray-500"
+      : "bg-blue-600 text-white hover:bg-blue-700"
+  }`}
+>
+  {new Date(event.endDate).getTime() < Date.now()
+    ? "Event Finished"
+    : "Edit Event"}
+</button>
+
 
                     <button
                       onClick={() => handleDelete(event._id)}

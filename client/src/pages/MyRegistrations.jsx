@@ -240,7 +240,7 @@ function MyRegistrations() {
                     <button
                       onClick={() =>
                         navigate(
-                          `/participant/ticket/${registration._id}`
+                          `/ticket/${registration._id}`
                         )
                       }
                       disabled={

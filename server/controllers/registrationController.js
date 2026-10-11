@@ -180,7 +180,13 @@ export const getMyRegistration = async (req, res) => {
         message: "You are not allowed to view this ticket",
       });
     }
+if (!registration.qrCode && registration.status !== "cancelled") {
+  registration.qrCode = await QRCode.toDataURL(
+    registration.ticketCode
+  );
 
+  await registration.save();
+}
     return res.status(200).json({
       message: "Ticket fetched successfully",
       ticket: registration,
