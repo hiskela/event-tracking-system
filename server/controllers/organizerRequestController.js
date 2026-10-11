@@ -1,6 +1,6 @@
 import OrganizerRequest from "../models/OrganizerRequest.js";
 import User from "../models/User.js";
-
+import { notifyAdmins, sendNotification } from "../utils/notificationService.js";
 export const createOrganizerRequest = async (req, res) => {
   try {
     const { organization, reason, phone, additionalInfo } = req.body;
@@ -42,7 +42,11 @@ export const createOrganizerRequest = async (req, res) => {
       phone,
       additionalInfo,
     });
-
+await notifyAdmins({
+  title: "New Organizer Request",
+  message: `${user.name} has requested organizer access for ${organization}.`,
+  type: "organizer_request",
+});
     res.status(201).json({
       message: "Organizer request submitted successfully",
       request,
@@ -91,21 +95,53 @@ export const updateOrganizerRequest = async (req, res) => {
       });
     }
 
+    if (status === "approved") {
+      const user = await User.findByIdAndUpdate(
+        request.user,
+        { role: "organizer" },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({
+          message: "Applicant account not found",
+        });
+      }
+    }
+
     request.status = status;
     await request.save();
 
-    if (status === "approved") {
-      await User.findByIdAndUpdate(request.user, {
-        role: "organizer",
-      });
-    }
+    
 
-    res.status(200).json({
+    const requestUser = await User.findById(request.user);
+
+if (requestUser) {
+  await sendNotification({
+    recipient: requestUser._id,
+    title:
+      status === "approved"
+        ? "Organizer Request Approved"
+        : "Organizer Request Rejected",
+    message:
+      status === "approved"
+        ? "Your organizer request has been approved. You can now create and manage events."
+        : "Your organizer request was rejected. You can contact the administrator if you need more information.",
+    type:
+      status === "approved"
+        ? "organizer_request_approved"
+        : "organizer_request_rejected",
+  });
+}
+
+    return res.status(200).json({
       message: `Organizer request ${status}`,
       request,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Update organizer request error:", error);
+
+    return res.status(500).json({
       message: "Failed to update organizer request",
     });
   }

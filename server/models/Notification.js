@@ -25,7 +25,13 @@ const notificationSchema = new mongoose.Schema(
         "registration",
         "event_update",
         "event_cancelled",
+        "event_reminder",
+        "event_created",
+        "registration_cancelled",
+        "capacity_reached",
         "organizer_request",
+        "organizer_request_approved",
+        "organizer_request_rejected",
         "system",
       ],
       default: "system",
@@ -43,10 +49,15 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+notificationSchema.index({
+  recipient: 1,
+  isRead: 1,
+  createdAt: -1,
+});
 
-
-notificationSchema.index({ recipient: 1, isRead: 1, createdAt: -1 });
-
-const Notification = mongoose.model("Notification", notificationSchema);
+const Notification = mongoose.model(
+  "Notification",
+  notificationSchema
+);
 
 export default Notification;

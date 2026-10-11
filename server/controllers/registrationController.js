@@ -3,7 +3,7 @@ import QRCode from "qrcode"
 import Event from "../models/Event.js";
 import Registration from "../models/Registration.js";
 import Notification from "../models/Notification.js";
-
+import { notifyEventOrganizer } from "../utils/notificationService.js";
 
 export const registerForEvent = async (req, res) => {
   try {
@@ -93,7 +93,28 @@ export const registerForEvent = async (req, res) => {
       type: "registration",
       event: event._id,
     });
+await notifyEventOrganizer({
+  organizerId: event.organizer,
+  title: "New Event Registration",
+  message: `A participant has registered for "${event.title}".`,
+  type: "registration",
+  event: event._id,
+});
 
+const updatedRegistrationCount = await Registration.countDocuments({
+  event: event._id,
+  status: "registered",
+});
+
+if (updatedRegistrationCount >= event.capacity) {
+  await notifyEventOrganizer({
+    organizerId: event.organizer,
+    title: "Event Capacity Reached",
+    message: `"${event.title}" is now fully booked.`,
+    type: "capacity_reached",
+    event: event._id,
+  });
+}
     return res.status(201).json({
       message: "Registration successful",
       registration,
@@ -287,7 +308,7 @@ export const cancelRegistration = async (req, res) => {
     const registration = await Registration.findOne({
       _id: req.params.id,
       participant: req.user.userId,
-    }).populate("event", "startDate registrationDeadline status");
+    }).populate("event", "title startDate registrationDeadline status organizer");
 
     if (!registration) {
       return res.status(404).json({
@@ -315,7 +336,13 @@ export const cancelRegistration = async (req, res) => {
 
     registration.status = "cancelled";
     await registration.save();
-
+await notifyEventOrganizer({
+  organizerId: registration.event.organizer,
+  title: "Registration Cancelled",
+  message: `A participant has cancelled their registration for "${registration.event.title}".`,
+  type: "registration_cancelled",
+  event: registration.event._id,
+});
     return res.status(200).json({
       message: "Registration cancelled successfully",
       registration,

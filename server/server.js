@@ -11,12 +11,14 @@ import eventRoutes from "./routes/eventRoutes.js"
 import registrationRoutes from "./routes/registrationRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js"
 import notificationRoutes from "./routes/notificationRoutes.js"
+import { startEventReminderJob } from "./jobs/eventReminderJob.js";
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 connectDB();
+startEventReminderJob();
 app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/admin", adminRoutes)

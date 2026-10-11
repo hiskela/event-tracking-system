@@ -1,6 +1,7 @@
 import Event from "../models/Event.js";
 import Category from "../models/Category.js";
 import Registration from "../models/Registration.js";
+import { notifyAdmins, notifyEventParticipants } from "../utils/notificationService.js";
 export const createEvent = async (req, res) => {
   try {
     const {
@@ -66,7 +67,12 @@ export const createEvent = async (req, res) => {
       price: price || 0,
       status: status || "draft",
     });
-
+await notifyAdmins({
+  title: "New Event Created",
+  message: `"${event.title}" was created by an organizer.`,
+  type: "event_created",
+  event: event._id,
+});
     res.status(201).json({
       message: "Event created successfully",
       event,
@@ -174,6 +180,15 @@ export const updateEvent = async (req, res) => {
         message: "Registration deadline must be before event start",
       });
     }
+const previousValues = {
+  title: event.title,
+  description: event.description,
+  image: event.image,
+  location: event.location,
+  startDate: event.startDate.getTime(),
+  endDate: event.endDate.getTime(),
+  status: event.status,
+};
 
     event.title = title;
     event.description = description;
@@ -188,7 +203,42 @@ export const updateEvent = async (req, res) => {
     event.status = status || event.status;
 
     await event.save();
+const wasCancelled = event.status === "cancelled";
 
+const detailsChanged =
+  previousValues.title !== event.title ||
+  previousValues.description !== event.description ||
+  previousValues.image !== event.image ||
+  previousValues.location !== event.location ||
+  previousValues.startDate !== new Date(event.startDate).getTime() ||
+  previousValues.endDate !== new Date(event.endDate).getTime();
+
+if (wasCancelled && previousValues.status !== "cancelled") {
+  await notifyEventParticipants({
+    eventId: event._id,
+    title: "Event Cancelled",
+    message: `"${event.title}" has been cancelled by the organizer.`,
+    type: "event_cancelled",
+  });
+
+  await notifyAdmins({
+    title: "Event Cancelled",
+    message: `"${event.title}" has been cancelled.`,
+    type: "event_cancelled",
+    event: event._id,
+  });
+} else if (
+  previousValues.status !== "cancelled" &&
+  event.status !== "cancelled" &&
+  detailsChanged
+) {
+  await notifyEventParticipants({
+    eventId: event._id,
+    title: "Event Updated",
+    message: `"${event.title}" has been updated. Review the event details before attending.`,
+    type: "event_update",
+  });
+}
     res.status(200).json({
       message: "Event updated successfully",
       event,
